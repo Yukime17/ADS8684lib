@@ -9,6 +9,7 @@
 
 static SPI_HandleTypeDef hspi1;
 
+void Error_Handler(void);
 /**
   * @brief SPI1 Initialization Function
   * @param None
@@ -118,9 +119,9 @@ uint16_t* ADS8684_readALL(void){
 	uint8_t AUTORESET[2] = {(uint8_t)(AUTO_RST >> 8), (uint8_t)AUTO_RST};
 	uint8_t NOOP[2] = {(uint8_t)(NO_OP >> 8), (uint8_t)NO_OP};
 	uint8_t data[2] = {0x00, 0x00};
-	uint16_t* ret[4];
+	uint16_t* ret = malloc(sizeof(uint16_t) * 8);
 	HAL_SPI_Transmit(&hspi1, (uint8_t *)AUTORESET, 2, 1000);
-	for(i = 0; i < 4; i++){
+	for(int i = 0; i < 4; i++){
 		HAL_SPI_Transmit(&hspi1, (uint8_t *)NOOP, 2, 1000);
 		HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)NOOP, (uint8_t *)data, 2, 1000);
 		temp = (data[0] << 8) | data[1];
@@ -134,12 +135,13 @@ uint16_t* ADS8684_readALL(void){
   * @param channel to be read (int)
   * @retval uint16_t containing the reading of each channel
   */
-uint16_t ADS8684_readCH(int ch){
+static uint16_t ADS8684_readCH(int ch){
 	uint16_t ret;
 	uint16_t cmd[4] = {MAN_CH_0, MAN_CH_1, MAN_CH_2, MAN_CH_3};
 	uint8_t data[2] = {0x00, 0x00};
 	uint8_t dummy[2] = {0x00, 0x00};
-	HAL_SPI_Transmit(&hspi1, (uint8_t *)cmd[ch], 2, 1000);
+	uint8_t SEND[2] = {(uint8_t)(cmd[ch] >> 8), (uint8_t)(cmd[ch])};
+	HAL_SPI_Transmit(&hspi1, (uint8_t *)SEND, 2, 1000);
 	HAL_SPI_Transmit(&hspi1,  (uint8_t *)dummy, 2, 1000);
 	HAL_SPI_TransmitReceive(&hspi1, (uint8_t *)dummy, (uint8_t *)data, 2, 1000);
 	ret = (data[0] << 8) | data[1];

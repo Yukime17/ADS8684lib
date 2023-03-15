@@ -33,7 +33,7 @@
 /*program register address*/
 
 /*other defines*/
-#define ADS8684_RST		HAL_GPIO_WritePin(ADC_RST_GPIO_Port, ADC_RST_Pin, GPIO_PIN_SET);
+#define ADS8684_RST		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 /*other defines*/
 
 /*function prototypes*/
@@ -43,7 +43,7 @@ void ADS8684_Init(void);
 void ADS8684_reset(void);
 void ADS8684_STDBY(void);
 uint16_t* ADS8684_readALL(void);
-uint16_t ADS8684_readCH(int ch);
+static uint16_t ADS8684_readCH(int ch);
 /*function prototypes*/
 
 
